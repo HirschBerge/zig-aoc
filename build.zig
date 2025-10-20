@@ -27,12 +27,11 @@ pub fn build(b: *Build) void {
     const run_all = b.step("run_all", "Run all days");
 
     const generate = b.step("generate", "Generate stub files from template/template.zig");
-    const build_generate = b.addExecutable(.{
-        .name = "generate",
+    const build_generate = b.addExecutable(.{ .name = "generate", .root_module = b.createModule(.{
         .root_source_file = b.path("template/generate.zig"),
         .target = target,
         .optimize = .ReleaseSafe,
-    });
+    }) });
 
     const run_generate = b.addRunArtifact(build_generate);
     run_generate.setCwd(b.path("")); // This could probably be done in a more idiomatic way
@@ -46,19 +45,21 @@ pub fn build(b: *Build) void {
 
         const exe = b.addExecutable(.{
             .name = dayString,
-            .root_source_file = b.path(zigFile),
-            .target = target,
-            .optimize = mode,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(zigFile),
+                .target = target,
+                .optimize = mode,
+            }),
         });
         linkObject(b, exe);
 
         const install_cmd = b.addInstallArtifact(exe, .{});
 
-        const build_test = b.addTest(.{
+        const build_test = b.addTest(.{ .root_module = b.createModule(.{
             .root_source_file = b.path(zigFile),
             .target = target,
             .optimize = mode,
-        });
+        }) });
         linkObject(b, build_test);
 
         const run_test = b.addRunArtifact(build_test);
@@ -92,22 +93,22 @@ pub fn build(b: *Build) void {
     // Set up tests for util.zig
     {
         const test_util = b.step("test_util", "Run tests in util.zig");
-        const test_cmd = b.addTest(.{
+        const test_cmd = b.addTest(.{ .root_module = b.createModule(.{
             .root_source_file = b.path("src/util.zig"),
             .target = target,
             .optimize = mode,
-        });
+        }) });
         linkObject(b, test_cmd);
         test_util.dependOn(&test_cmd.step);
     }
 
     // Set up all tests contained in test_all.zig
     const test_all = b.step("test", "Run all tests");
-    const all_tests = b.addTest(.{
+    const all_tests = b.addTest(.{ .root_module = b.createModule(.{
         .root_source_file = b.path("src/test_all.zig"),
         .target = target,
         .optimize = mode,
-    });
+    }) });
     const run_all_tests = b.addRunArtifact(all_tests);
     test_all.dependOn(&run_all_tests.step);
 }

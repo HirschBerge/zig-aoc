@@ -7,18 +7,18 @@ const Hash = std.crypto.hash.Md5;
 const hashes_file = "template/hashes.bin";
 
 fn instantiateTemplate(template: []const u8, day: u32) ![]const u8 {
-    var list = std.ArrayList(u8).init(gpa.allocator());
-    errdefer list.deinit();
+    var list = try std.ArrayList(u8).initCapacity(gpa.allocator(), 0);
+    errdefer list.deinit(gpa.allocator());
 
-    try list.ensureTotalCapacity(template.len + 100);
+    try list.ensureTotalCapacity(gpa.allocator(), template.len + 100);
     var rest: []const u8 = template;
     while (std.mem.indexOfScalar(u8, rest, '$')) |index| {
-        try list.appendSlice(rest[0..index]);
-        try std.fmt.format(list.writer(), "{d:0>2}", .{day});
+        try list.appendSlice(gpa.allocator(), rest[0..index]);
+        try std.fmt.format(list.writer(gpa.allocator()), "{d:0>2}", .{day});
         rest = rest[index + 1 ..];
     }
-    try list.appendSlice(rest);
-    return list.toOwnedSlice();
+    try list.appendSlice(gpa.allocator(), rest);
+    return list.toOwnedSlice(gpa.allocator());
 }
 
 fn readHashes() !*[25][Hash.digest_length]u8 {
