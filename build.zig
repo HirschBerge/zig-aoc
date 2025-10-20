@@ -5,7 +5,7 @@ const CompileStep = std.Build.Step.Compile;
 /// set this to true to link libc
 const should_link_libc = false;
 
-const required_zig_version = std.SemanticVersion.parse("0.13.0") catch unreachable;
+const required_zig_version = std.SemanticVersion.parse("0.15.1") catch unreachable;
 
 fn linkObject(b: *Build, obj: *CompileStep) void {
     if (should_link_libc) obj.linkLibC();
