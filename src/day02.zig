@@ -38,37 +38,30 @@ pub fn parse_data(datums: []const u8) !u16 {
         while (it.next()) |chunk| {
             const prev = chunk[0];
             const current = chunk[1];
-            std.debug.print("p {d} c {d}\n", .{ prev, current });
 
             if ((prev == current)) {
                 is_safe = false;
-                std.debug.print("Equal\n", .{});
                 break;
             }
             if (prev < current) {
                 if (going_down == true) {
                     is_safe = false;
-                    std.debug.print("Going down to going up\n", .{});
                     break;
                 }
                 going_down = false;
             } else if (prev > current) {
                 if (going_down == false) {
                     is_safe = false;
-                    std.debug.print("Going up to going down\n", .{});
                     break;
                 }
                 going_down = true;
             }
             if (absdiff(prev, current) >= 4) {
-                print("Large change: {d}\n", .{absdiff(prev, current)});
                 is_safe = false;
                 break;
             }
         }
-        // std.debug.print("Total Safe: {d}  -- ", .{total});
         if (is_safe) total += 1;
-        std.debug.print("{any}\n", .{numbers.items});
     }
     return total;
 }
@@ -79,6 +72,7 @@ pub fn part_two() void {
     std.debug.print("Lorem Ipsum\n", .{});
 }
 pub fn main() !void {
+    std.debug.print("Day Two!\n", .{});
     try part_one();
     part_two();
 }

@@ -93,6 +93,7 @@ pub fn part_two() !void {
 }
 
 pub fn main() !void {
+    std.debug.print("Day One!\n", .{});
     try part_one();
     try part_two();
 }

@@ -5,13 +5,26 @@ const Map = std.AutoHashMap;
 const StrMap = std.StringHashMap;
 const BitSet = std.DynamicBitSet;
 
+const aoc = @import("aoc.zig");
 const util = @import("util.zig");
 const gpa = util.gpa;
 
-const data = @embedFile("data/day03.txt");
+const InputIterator = aoc.InputIterator;
+// const data = @embedFile("data/day03.txt");
 
 pub fn main() !void {
-    
+    const start_time = std.time.nanoTimestamp();
+    defer {
+        const end_time = std.time.nanoTimestamp();
+        const elapsed = end_time - start_time;
+        const elapsed_us = @divFloor(elapsed, std.time.ns_per_us);
+        std.debug.print(" : {d}us\n", .{elapsed_us});
+    }
+    const input_path = "./src/data/day03.txt";
+    var input: InputIterator = try .init(input_path);
+    while (input.next()) |value| {
+        std.debug.print("{s}\n", .{value});
+    }
 }
 
 // Useful stdlib functions
