@@ -27,6 +27,47 @@ pub fn main() !void {
     }
 }
 
+const Lexer = struct {
+    data: []const u8,
+    index: usize = 0,
+    read_ahead: usize = 0,
+    ch: u8 = 0,
+
+    const Self = @This();
+    pub fn readNumber(self: *Self) []const u8 {
+        const start = self.index;
+        while (self.isDigit()) self.nextChar();
+        return self.data[start..self.index];
+    }
+
+    pub fn isDigit(self: *Self) bool {
+        return '0' <= self.ch and self.ch <= '9';
+    }
+
+    pub fn isLetter(self: *Self) bool {
+        return switch (self.ch) {
+            'm' => true,
+            'u' => true,
+            'l' => true,
+            'd' => true,
+            'o' => true,
+            'n' => true,
+            't' => true,
+            '\'' => true,
+            else => false,
+        };
+    }
+};
+
+const TokenType = enum {
+    LETTER,
+    DIGIT,
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    COMMA,
+    SPECIAL,
+};
+
 // Useful stdlib functions
 const tokenizeAny = std.mem.tokenizeAny;
 const tokenizeSeq = std.mem.tokenizeSequence;
